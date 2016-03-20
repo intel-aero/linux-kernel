@@ -16,6 +16,7 @@ help:
 	@echo '  iio        - IIO tools'
 	@echo '  lguest     - a minimal 32-bit x86 hypervisor'
 	@echo '  perf       - Linux performance measurement and analysis tool'
+	@echo '  rpmb                   - Replay protected memory block access tool'
 	@echo '  selftests  - various kernel selftests'
 	@echo '  turbostat  - Intel CPU idle stats and freq reporting tool'
 	@echo '  usb        - USB testing tools'
@@ -52,7 +53,7 @@ acpi: FORCE
 cpupower: FORCE
 	$(call descend,power/$@)
 
-cgroup firewire hv guest usb virtio vm net iio: FORCE
+cgroup firewire hv guest rpmb usb virtio vm net iio: FORCE
 	$(call descend,$@)
 
 liblockdep: FORCE
@@ -82,7 +83,7 @@ freefall: FORCE
 	$(call descend,laptop/$@)
 
 all: acpi cgroup cpupower hv firewire lguest \
-		perf selftests turbostat usb \
+		perf rpmb selftests turbostat usb \
 		virtio vm net x86_energy_perf_policy \
 		tmon freefall
 
@@ -92,7 +93,7 @@ acpi_install:
 cpupower_install:
 	$(call descend,power/$(@:_install=),install)
 
-cgroup_install firewire_install hv_install lguest_install perf_install usb_install virtio_install vm_install net_install:
+cgroup_install firewire_install hv_install lguest_install rpmb_install perf_install usb_install virtio_install vm_install net_install:
 	$(call descend,$(@:_install=),install)
 
 selftests_install:
@@ -108,7 +109,7 @@ freefall_install:
 	$(call descend,laptop/$(@:_install=),install)
 
 install: acpi_install cgroup_install cpupower_install hv_install firewire_install lguest_install \
-		perf_install selftests_install turbostat_install usb_install \
+		perf_install rpmb_install selftests_install turbostat_install usb_install \
 		virtio_install vm_install net_install x86_energy_perf_policy_install \
 		tmon_install freefall_install
 
@@ -130,6 +131,9 @@ libapi_clean:
 perf_clean:
 	$(call descend,$(@:_clean=),clean)
 
+rpmb_clean:
+	$(call descend,$(@:_clean=),clean)
+
 selftests_clean:
 	$(call descend,testing/$(@:_clean=),clean)
 
@@ -143,7 +147,7 @@ freefall_clean:
 	$(call descend,laptop/freefall,clean)
 
 clean: acpi_clean cgroup_clean cpupower_clean hv_clean firewire_clean lguest_clean \
-		perf_clean selftests_clean turbostat_clean usb_clean virtio_clean \
+		perf_clean rpmb_clean selftests_clean turbostat_clean usb_clean virtio_clean \
 		vm_clean net_clean iio_clean x86_energy_perf_policy_clean tmon_clean \
 		freefall_clean
 
