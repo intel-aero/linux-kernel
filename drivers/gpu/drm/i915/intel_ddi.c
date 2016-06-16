@@ -444,7 +444,7 @@ void intel_prepare_ddi_buffer(struct intel_encoder *encoder)
 		ddi_translations_fdi = bdw_ddi_translations_fdi;
 		ddi_translations_dp = bdw_ddi_translations_dp;
 
-		if (dev_priv->edp_low_vswing) {
+		if (dev_priv->vbt.edp.low_vswing) {
 			ddi_translations_edp = bdw_ddi_translations_edp;
 			n_edp_entries = ARRAY_SIZE(bdw_ddi_translations_edp);
 		} else {
