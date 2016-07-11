@@ -510,4 +510,13 @@ config XPOWER_PMIC_OPREGION
 
 endif
 
+config ACPI_CONFIGFS
+	tristate "ACPI configfs support"
+	select CONFIGFS_FS
+	default n
+	help
+	  Select this option to enable support for ACPI configuration from
+	  userspace. The configurable ACPI groups will be visible under
+	  /config/acpi, assuming configfs is mounted under /config.
+
 endif	# ACPI
