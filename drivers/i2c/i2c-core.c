@@ -297,6 +297,9 @@ static int acpi_i2c_notify(struct notifier_block *nb, unsigned long value,
 		acpi_i2c_register_device(adapter, adev, &info);
 		break;
 	case ACPI_RECONFIG_DEVICE_REMOVE:
+		if (!acpi_device_enumerated(adev))
+			break;
+
 		client = acpi_i2c_find_client_by_adev(adev);
 		if (!client)
 			break;
