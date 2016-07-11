@@ -97,6 +97,14 @@ config DRM_KMS_CMA_HELPER
 	help
 	  Choose this if you need the KMS CMA helper functions
 
+config DRM_DMA_SYNC
+	bool "DRM DMA Sync"
+	depends on DRM && DMA_SHARED_BUFFER
+	default n
+	help
+	  Choose this option if you want to use fences and reservations for
+	  synchronization of shared dma-buf access between different drivers.
+
 source "drivers/gpu/drm/i2c/Kconfig"
 
 config DRM_TDFX
@@ -105,6 +113,8 @@ config DRM_TDFX
 	help
 	  Choose this option if you have a 3dfx Banshee or Voodoo3 (or later),
 	  graphics card.  If M is selected, the module will be called tdfx.
+
+source "drivers/gpu/drm/arm/Kconfig"
 
 config DRM_R128
 	tristate "ATI Rage 128"

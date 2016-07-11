@@ -16,6 +16,7 @@
 #include <drm/drmP.h>
 #include <drm/drm_gem.h>
 #include <drm/drm_vma_manager.h>
+#include <drm/rockchip_drm.h>
 
 #include <linux/dma-attrs.h>
 
@@ -38,7 +39,7 @@ static int rockchip_gem_alloc_buf(struct rockchip_gem_object *rk_obj,
 					 &rk_obj->dma_addr, GFP_KERNEL,
 					 &rk_obj->dma_attrs);
 	if (!rk_obj->kvaddr) {
-		DRM_ERROR("failed to allocate %#x byte dma buffer", obj->size);
+		DRM_ERROR("failed to allocate %zu byte dma buffer", obj->size);
 		return -ENOMEM;
 	}
 
@@ -234,17 +235,32 @@ int rockchip_gem_dumb_create(struct drm_file *file_priv,
 	/*
 	 * align to 64 bytes since Mali requires it.
 	 */
-	min_pitch = ALIGN(min_pitch, 64);
-
-	if (args->pitch < min_pitch)
-		args->pitch = min_pitch;
-
-	if (args->size < args->pitch * args->height)
-		args->size = args->pitch * args->height;
+	args->pitch = ALIGN(min_pitch, 64);
+	args->size = args->pitch * args->height;
 
 	rk_obj = rockchip_gem_create_with_handle(file_priv, dev, args->size,
 						 &args->handle);
 
+	return PTR_ERR_OR_ZERO(rk_obj);
+}
+
+int rockchip_gem_map_offset_ioctl(struct drm_device *drm, void *data,
+				  struct drm_file *file_priv)
+{
+	struct drm_rockchip_gem_map_off *args = data;
+
+	return rockchip_gem_dumb_map_offset(file_priv, drm, args->handle,
+					    &args->offset);
+}
+
+int rockchip_gem_create_ioctl(struct drm_device *dev, void *data,
+			      struct drm_file *file_priv)
+{
+	struct drm_rockchip_gem_create *args = data;
+	struct rockchip_gem_object *rk_obj;
+
+	rk_obj = rockchip_gem_create_with_handle(file_priv, dev, args->size,
+						 &args->handle);
 	return PTR_ERR_OR_ZERO(rk_obj);
 }
 
