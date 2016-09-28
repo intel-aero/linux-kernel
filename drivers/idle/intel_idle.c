@@ -745,6 +745,7 @@ static struct cpuidle_state avn_cstates[] = {
 	{
 		.enter = NULL }
 };
+
 static struct cpuidle_state knl_cstates[] = {
 	{
 		.name = "C1-KNL",
