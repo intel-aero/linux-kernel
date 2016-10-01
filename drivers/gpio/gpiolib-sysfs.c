@@ -355,8 +355,7 @@ static DEVICE_ATTR_RW(active_low);
 static ssize_t gpio_drive_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
-	struct gpiod_data       *data = dev_get_drvdata(dev);
-	struct gpio_desc        *desc = data->desc;
+	const struct gpio_desc	*desc = dev_get_drvdata(dev);
 	ssize_t			status;
 
 	mutex_lock(&sysfs_lock);
@@ -383,8 +382,7 @@ static ssize_t gpio_drive_show(struct device *dev,
 static ssize_t gpio_drive_store(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t size)
 {
-	struct gpiod_data       *data = dev_get_drvdata(dev);
-	struct gpio_desc        *desc = data->desc;
+	struct gpio_desc	*desc = dev_get_drvdata(dev);
 	ssize_t			status;
 
 	mutex_lock(&sysfs_lock);
