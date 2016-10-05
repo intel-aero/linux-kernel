@@ -36,8 +36,31 @@
 #define dump_register(nm)				\
 {							\
 	.name	= __stringify(nm),			\
-	.offset	= DWC3_ ##nm - DWC3_GLOBALS_REGS_START,	\
+	.offset	= DWC3_ ##nm,				\
 }
+
+#define dump_ep_register_set(n)			\
+	{					\
+		.name = "DEPCMDPAR2("__stringify(n)")",	\
+		.offset = DWC3_DEP_BASE(n) +	\
+			DWC3_DEPCMDPAR2,	\
+	},					\
+	{					\
+		.name = "DEPCMDPAR1("__stringify(n)")",	\
+		.offset = DWC3_DEP_BASE(n) +	\
+			DWC3_DEPCMDPAR1,	\
+	},					\
+	{					\
+		.name = "DEPCMDPAR0("__stringify(n)")",	\
+		.offset = DWC3_DEP_BASE(n) +	\
+			DWC3_DEPCMDPAR0,	\
+	},					\
+	{					\
+		.name = "DEPCMD("__stringify(n)")",	\
+		.offset = DWC3_DEP_BASE(n) +	\
+			DWC3_DEPCMD,		\
+	}
+
 
 static const struct debugfs_reg32 dwc3_regs[] = {
 	dump_register(GSBUSCFG0),
@@ -218,137 +241,38 @@ static const struct debugfs_reg32 dwc3_regs[] = {
 	dump_register(DGCMD),
 	dump_register(DALEPENA),
 
-	dump_register(DEPCMDPAR2(0)),
-	dump_register(DEPCMDPAR2(1)),
-	dump_register(DEPCMDPAR2(2)),
-	dump_register(DEPCMDPAR2(3)),
-	dump_register(DEPCMDPAR2(4)),
-	dump_register(DEPCMDPAR2(5)),
-	dump_register(DEPCMDPAR2(6)),
-	dump_register(DEPCMDPAR2(7)),
-	dump_register(DEPCMDPAR2(8)),
-	dump_register(DEPCMDPAR2(9)),
-	dump_register(DEPCMDPAR2(10)),
-	dump_register(DEPCMDPAR2(11)),
-	dump_register(DEPCMDPAR2(12)),
-	dump_register(DEPCMDPAR2(13)),
-	dump_register(DEPCMDPAR2(14)),
-	dump_register(DEPCMDPAR2(15)),
-	dump_register(DEPCMDPAR2(16)),
-	dump_register(DEPCMDPAR2(17)),
-	dump_register(DEPCMDPAR2(18)),
-	dump_register(DEPCMDPAR2(19)),
-	dump_register(DEPCMDPAR2(20)),
-	dump_register(DEPCMDPAR2(21)),
-	dump_register(DEPCMDPAR2(22)),
-	dump_register(DEPCMDPAR2(23)),
-	dump_register(DEPCMDPAR2(24)),
-	dump_register(DEPCMDPAR2(25)),
-	dump_register(DEPCMDPAR2(26)),
-	dump_register(DEPCMDPAR2(27)),
-	dump_register(DEPCMDPAR2(28)),
-	dump_register(DEPCMDPAR2(29)),
-	dump_register(DEPCMDPAR2(30)),
-	dump_register(DEPCMDPAR2(31)),
-
-	dump_register(DEPCMDPAR1(0)),
-	dump_register(DEPCMDPAR1(1)),
-	dump_register(DEPCMDPAR1(2)),
-	dump_register(DEPCMDPAR1(3)),
-	dump_register(DEPCMDPAR1(4)),
-	dump_register(DEPCMDPAR1(5)),
-	dump_register(DEPCMDPAR1(6)),
-	dump_register(DEPCMDPAR1(7)),
-	dump_register(DEPCMDPAR1(8)),
-	dump_register(DEPCMDPAR1(9)),
-	dump_register(DEPCMDPAR1(10)),
-	dump_register(DEPCMDPAR1(11)),
-	dump_register(DEPCMDPAR1(12)),
-	dump_register(DEPCMDPAR1(13)),
-	dump_register(DEPCMDPAR1(14)),
-	dump_register(DEPCMDPAR1(15)),
-	dump_register(DEPCMDPAR1(16)),
-	dump_register(DEPCMDPAR1(17)),
-	dump_register(DEPCMDPAR1(18)),
-	dump_register(DEPCMDPAR1(19)),
-	dump_register(DEPCMDPAR1(20)),
-	dump_register(DEPCMDPAR1(21)),
-	dump_register(DEPCMDPAR1(22)),
-	dump_register(DEPCMDPAR1(23)),
-	dump_register(DEPCMDPAR1(24)),
-	dump_register(DEPCMDPAR1(25)),
-	dump_register(DEPCMDPAR1(26)),
-	dump_register(DEPCMDPAR1(27)),
-	dump_register(DEPCMDPAR1(28)),
-	dump_register(DEPCMDPAR1(29)),
-	dump_register(DEPCMDPAR1(30)),
-	dump_register(DEPCMDPAR1(31)),
-
-	dump_register(DEPCMDPAR0(0)),
-	dump_register(DEPCMDPAR0(1)),
-	dump_register(DEPCMDPAR0(2)),
-	dump_register(DEPCMDPAR0(3)),
-	dump_register(DEPCMDPAR0(4)),
-	dump_register(DEPCMDPAR0(5)),
-	dump_register(DEPCMDPAR0(6)),
-	dump_register(DEPCMDPAR0(7)),
-	dump_register(DEPCMDPAR0(8)),
-	dump_register(DEPCMDPAR0(9)),
-	dump_register(DEPCMDPAR0(10)),
-	dump_register(DEPCMDPAR0(11)),
-	dump_register(DEPCMDPAR0(12)),
-	dump_register(DEPCMDPAR0(13)),
-	dump_register(DEPCMDPAR0(14)),
-	dump_register(DEPCMDPAR0(15)),
-	dump_register(DEPCMDPAR0(16)),
-	dump_register(DEPCMDPAR0(17)),
-	dump_register(DEPCMDPAR0(18)),
-	dump_register(DEPCMDPAR0(19)),
-	dump_register(DEPCMDPAR0(20)),
-	dump_register(DEPCMDPAR0(21)),
-	dump_register(DEPCMDPAR0(22)),
-	dump_register(DEPCMDPAR0(23)),
-	dump_register(DEPCMDPAR0(24)),
-	dump_register(DEPCMDPAR0(25)),
-	dump_register(DEPCMDPAR0(26)),
-	dump_register(DEPCMDPAR0(27)),
-	dump_register(DEPCMDPAR0(28)),
-	dump_register(DEPCMDPAR0(29)),
-	dump_register(DEPCMDPAR0(30)),
-	dump_register(DEPCMDPAR0(31)),
-
-	dump_register(DEPCMD(0)),
-	dump_register(DEPCMD(1)),
-	dump_register(DEPCMD(2)),
-	dump_register(DEPCMD(3)),
-	dump_register(DEPCMD(4)),
-	dump_register(DEPCMD(5)),
-	dump_register(DEPCMD(6)),
-	dump_register(DEPCMD(7)),
-	dump_register(DEPCMD(8)),
-	dump_register(DEPCMD(9)),
-	dump_register(DEPCMD(10)),
-	dump_register(DEPCMD(11)),
-	dump_register(DEPCMD(12)),
-	dump_register(DEPCMD(13)),
-	dump_register(DEPCMD(14)),
-	dump_register(DEPCMD(15)),
-	dump_register(DEPCMD(16)),
-	dump_register(DEPCMD(17)),
-	dump_register(DEPCMD(18)),
-	dump_register(DEPCMD(19)),
-	dump_register(DEPCMD(20)),
-	dump_register(DEPCMD(21)),
-	dump_register(DEPCMD(22)),
-	dump_register(DEPCMD(23)),
-	dump_register(DEPCMD(24)),
-	dump_register(DEPCMD(25)),
-	dump_register(DEPCMD(26)),
-	dump_register(DEPCMD(27)),
-	dump_register(DEPCMD(28)),
-	dump_register(DEPCMD(29)),
-	dump_register(DEPCMD(30)),
-	dump_register(DEPCMD(31)),
+	dump_ep_register_set(0),
+	dump_ep_register_set(1),
+	dump_ep_register_set(2),
+	dump_ep_register_set(3),
+	dump_ep_register_set(4),
+	dump_ep_register_set(5),
+	dump_ep_register_set(6),
+	dump_ep_register_set(7),
+	dump_ep_register_set(8),
+	dump_ep_register_set(9),
+	dump_ep_register_set(10),
+	dump_ep_register_set(11),
+	dump_ep_register_set(12),
+	dump_ep_register_set(13),
+	dump_ep_register_set(14),
+	dump_ep_register_set(15),
+	dump_ep_register_set(16),
+	dump_ep_register_set(17),
+	dump_ep_register_set(18),
+	dump_ep_register_set(19),
+	dump_ep_register_set(20),
+	dump_ep_register_set(21),
+	dump_ep_register_set(22),
+	dump_ep_register_set(23),
+	dump_ep_register_set(24),
+	dump_ep_register_set(25),
+	dump_ep_register_set(26),
+	dump_ep_register_set(27),
+	dump_ep_register_set(28),
+	dump_ep_register_set(29),
+	dump_ep_register_set(30),
+	dump_ep_register_set(31),
 
 	dump_register(OCFG),
 	dump_register(OCTL),
@@ -618,69 +542,52 @@ static const struct file_operations dwc3_link_state_fops = {
 	.release		= single_release,
 };
 
-int dwc3_debugfs_init(struct dwc3 *dwc)
+void dwc3_debugfs_init(struct dwc3 *dwc)
 {
 	struct dentry		*root;
-	struct dentry		*file;
-	int			ret;
+	struct dentry           *file;
 
 	root = debugfs_create_dir(dev_name(dwc->dev), NULL);
-	if (!root) {
-		ret = -ENOMEM;
-		goto err0;
+	if (IS_ERR_OR_NULL(root)) {
+		if (!root)
+			dev_err(dwc->dev, "Can't create debugfs root\n");
+		return;
 	}
-
 	dwc->root = root;
 
 	dwc->regset = kzalloc(sizeof(*dwc->regset), GFP_KERNEL);
 	if (!dwc->regset) {
-		ret = -ENOMEM;
-		goto err1;
+		debugfs_remove_recursive(root);
+		return;
 	}
 
 	dwc->regset->regs = dwc3_regs;
 	dwc->regset->nregs = ARRAY_SIZE(dwc3_regs);
-	dwc->regset->base = dwc->regs;
+	dwc->regset->base = dwc->regs - DWC3_GLOBALS_REGS_START;
 
 	file = debugfs_create_regset32("regdump", S_IRUGO, root, dwc->regset);
-	if (!file) {
-		ret = -ENOMEM;
-		goto err1;
-	}
+	if (!file)
+		dev_dbg(dwc->dev, "Can't create debugfs regdump\n");
 
 	if (IS_ENABLED(CONFIG_USB_DWC3_DUAL_ROLE)) {
 		file = debugfs_create_file("mode", S_IRUGO | S_IWUSR, root,
 				dwc, &dwc3_mode_fops);
-		if (!file) {
-			ret = -ENOMEM;
-			goto err1;
-		}
+		if (!file)
+			dev_dbg(dwc->dev, "Can't create debugfs mode\n");
 	}
 
 	if (IS_ENABLED(CONFIG_USB_DWC3_DUAL_ROLE) ||
 			IS_ENABLED(CONFIG_USB_DWC3_GADGET)) {
 		file = debugfs_create_file("testmode", S_IRUGO | S_IWUSR, root,
 				dwc, &dwc3_testmode_fops);
-		if (!file) {
-			ret = -ENOMEM;
-			goto err1;
-		}
+		if (!file)
+			dev_dbg(dwc->dev, "Can't create debugfs testmode\n");
 
-		file = debugfs_create_file("link_state", S_IRUGO | S_IWUSR, root,
-				dwc, &dwc3_link_state_fops);
-		if (!file) {
-			ret = -ENOMEM;
-			goto err1;
-		}
+		file = debugfs_create_file("link_state", S_IRUGO | S_IWUSR,
+				root, dwc, &dwc3_link_state_fops);
+		if (!file)
+			dev_dbg(dwc->dev, "Can't create debugfs link_state\n");
 	}
-
-	return 0;
-
-err1:
-	debugfs_remove_recursive(root);
-
-err0:
-	return ret;
 }
 
 void dwc3_debugfs_exit(struct dwc3 *dwc)

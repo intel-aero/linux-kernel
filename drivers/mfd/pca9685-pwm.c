@@ -80,16 +80,16 @@ int pca9685_update_prescale(struct pca9685 *pca, unsigned period_ns,
 	if (reconfigure_channels) {
 		for (i = 0; i < pca->pwm_chip.npwm; i++) {
 			pwm = &pca->pwm_chip.pwms[i];
-			pwm->period = period_ns;
-			if (pwm->duty_cycle > 0) {
+			pwm->state.period = period_ns;
+			if (pwm->state.duty_cycle > 0) {
 				/* Scale the rise time to maintain duty cycle */
 				duty_scale = period_ns;
 				duty_scale *= 1000000;
 				do_div(duty_scale, pca->pwm_period);
-				new_duty_ns = duty_scale * pwm->duty_cycle;
+				new_duty_ns = duty_scale * pwm->state.duty_cycle;
 				do_div(new_duty_ns, 1000000);
 				/* Update the duty_cycle */
-				pwm_config(pwm, (int)new_duty_ns, pwm->period);
+				pwm_config(pwm, (int)new_duty_ns, pwm->state.period);
 			}
 		}
 	}
@@ -159,7 +159,7 @@ static int pca9685_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	/* Changing PWM period for a single channel at run-time not allowed.
 	 * The PCA9685 PWM clock is shared across all PWM channels
 	 */
-	if (unlikely(period_ns != pwm->period))
+	if (unlikely(period_ns != pwm->state.period))
 		return -EPERM;
 
 	if (unlikely(pwm->hwpwm >= PCA9685_MAXCHAN)) {
@@ -180,7 +180,7 @@ static int pca9685_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	else /* clear the LED_FULL bit */
 		regmap_write(pca->regmap, reg_on_h, 0x00);
 
-	full_off = !test_bit(PWMF_ENABLED, &pwm->flags) << 4;
+	full_off = !pwm_is_enabled(pwm);
 
 	regmap_write(pca->regmap, reg_off_l, (int)duty & 0xff);
 
@@ -246,7 +246,7 @@ static int pca9685_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
 		(gpiochip_is_requested(gpio_chip, channel)))
 			return -EBUSY;
 
-	pwm->period = pca->pwm_period;
+	pwm->state.period = pca->pwm_period;
 
 	return 0;
 }

@@ -24,6 +24,9 @@
 #include <linux/of_fdt.h>
 #include <linux/io.h>
 #include <linux/platform_device.h>
+#include <linux/slab.h>
+#include <linux/acpi.h>
+#include <linux/ucs2_string.h>
 
 struct efi __read_mostly efi = {
 	.mps			= EFI_INVALID_TABLE_ADDR,
@@ -192,6 +195,85 @@ static void generic_ops_unregister(void)
 	efivars_unregister(&generic_efivars);
 }
 
+#if IS_ENABLED(CONFIG_ACPI)
+#define EFIVAR_SSDT_NAME_MAX	16
+static char efivar_ssdt[EFIVAR_SSDT_NAME_MAX];
+static int __init efivar_ssdt_setup(char *str)
+{
+	if (strlen(str) < sizeof(efivar_ssdt))
+		memcpy(efivar_ssdt, str, strlen(str));
+	else
+		pr_warn("efivar_ssdt: name too long: %s\n", str);
+	return 0;
+}
+__setup("efivar_ssdt=", efivar_ssdt_setup);
+
+static __init int efivar_ssdt_iter(efi_char16_t *name, efi_guid_t vendor,
+				   unsigned long name_size, void *data)
+{
+	struct efivar_entry *entry = data;
+	char utf8_name[EFIVAR_SSDT_NAME_MAX];
+	int limit = min_t(unsigned long, EFIVAR_SSDT_NAME_MAX, name_size);
+	unsigned long size;
+	int err;
+
+	ucs2_as_utf8(utf8_name, name, limit - 1);
+	if (strncmp(utf8_name, efivar_ssdt, limit) != 0)
+		return 0;
+
+	pr_info("Loading SSDT from EFI variable %s\n", efivar_ssdt);
+
+	memcpy(entry->var.VariableName, name, name_size);
+	memcpy(&entry->var.VendorGuid, &vendor, sizeof(efi_guid_t));
+
+	err = efivar_entry_size(entry, &size);
+	if (err) {
+		pr_err("efivar_ssdt: failed to get var size\n");
+		return 0;
+	}
+
+	data = kmalloc(size, GFP_KERNEL);
+	if (!data)
+		return 0;
+
+	err = efivar_entry_get(entry, NULL, &size, data);
+	if (err) {
+		pr_err("efivar_ssdt: failed to get var data\n");
+		kfree(data);
+		return 0;
+	}
+
+	err = acpi_load_table(data);
+	if (err) {
+		pr_err("efivar_ssdt: failed to load table: %d\n", err);
+		kfree(data);
+	}
+
+	return 0;
+}
+
+static __init int efivar_ssdt_load(void)
+{
+	struct efivar_entry *entry;
+	/* We need a temporary empty list to be able to set duplicates
+	 * to true so that the efivar lock is dropped to allow us to
+	 * call efivar_entry_get from the iterator function.
+	 */
+	LIST_HEAD(tmp);
+	int ret;
+
+	/* efivar_entry is too big to allocate it on stack */
+	entry = kmalloc(sizeof(*entry), GFP_KERNEL);
+	if (!entry)
+		return -ENOMEM;
+	ret = efivar_init(efivar_ssdt_iter, entry, true, &tmp);
+	kfree(entry);
+	return ret;
+}
+#else
+static inline int efivar_ssdt_load(void) { return 0; }
+#endif
+
 /*
  * We register the efi subsystem with the firmware subsystem and the
  * efivars subsystem with the efi subsystem, if the system was booted with
@@ -214,6 +296,9 @@ static int __init efisubsys_init(void)
 	error = generic_ops_register();
 	if (error)
 		goto err_put;
+
+	if (efi_enabled(EFI_RUNTIME_SERVICES))
+		efivar_ssdt_load();
 
 	error = sysfs_create_group(efi_kobj, &efi_subsys_attr_group);
 	if (error) {
