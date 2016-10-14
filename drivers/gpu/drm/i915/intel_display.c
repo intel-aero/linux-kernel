@@ -14559,6 +14559,7 @@ static void intel_setup_outputs(struct drm_device *dev)
 		if (I915_READ(PCH_DP_D) & DP_DETECTED)
 			intel_dp_init(dev, PCH_DP_D, PORT_D);
 	} else if (IS_VALLEYVIEW(dev) || IS_CHERRYVIEW(dev)) {
+		bool has_edp, has_port;
 		/*
 		 * The DP_DETECTED bit is the latched state of the DDC
 		 * SDA pin at boot. However since eDP doesn't require DDC

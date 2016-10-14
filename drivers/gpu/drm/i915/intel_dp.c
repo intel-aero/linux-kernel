@@ -5957,9 +5957,9 @@ fail:
 	return false;
 }
 
-void
-intel_dp_init(struct drm_device *dev,
-	      i915_reg_t output_reg, enum port port)
+bool intel_dp_init(struct drm_device *dev,
+		   i915_reg_t output_reg,
+		   enum port port)
 {
 	struct drm_i915_private *dev_priv = dev->dev_private;
 	struct intel_digital_port *intel_dig_port;
