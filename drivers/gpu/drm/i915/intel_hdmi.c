@@ -1363,10 +1363,9 @@ intel_hdmi_set_edid(struct drm_connector *connector)
 
 	intel_display_power_get(dev_priv, POWER_DOMAIN_GMBUS);
 
-	if (force)
-		edid = drm_get_edid(connector,
-				    intel_gmbus_get_adapter(dev_priv,
-				    intel_hdmi->ddc_bus));
+	edid = drm_get_edid(connector,
+			    intel_gmbus_get_adapter(dev_priv,
+						    intel_hdmi->ddc_bus));
 
 	intel_display_power_put(dev_priv, POWER_DOMAIN_GMBUS);
 
