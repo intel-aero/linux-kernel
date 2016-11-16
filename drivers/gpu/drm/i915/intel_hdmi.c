@@ -1361,15 +1361,14 @@ intel_hdmi_set_edid(struct drm_connector *connector)
 	struct edid *edid;
 	bool connected = false;
 
-	if (force) {
-		intel_display_power_get(dev_priv, POWER_DOMAIN_GMBUS);
+	intel_display_power_get(dev_priv, POWER_DOMAIN_GMBUS);
 
+	if (force)
 		edid = drm_get_edid(connector,
 				    intel_gmbus_get_adapter(dev_priv,
 				    intel_hdmi->ddc_bus));
 
-		intel_display_power_put(dev_priv, POWER_DOMAIN_GMBUS);
-	}
+	intel_display_power_put(dev_priv, POWER_DOMAIN_GMBUS);
 
 	to_intel_connector(connector)->detect_edid = edid;
 	if (edid && edid->input & DRM_EDID_INPUT_DIGITAL) {
